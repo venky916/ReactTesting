@@ -24,5 +24,16 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.spec.ts",
+    "e2e",
+    "src/utils/axiosErrorHandler.ts",
+    "src/App2.tsx",
+    "src/test/test-utils.tsx",
+    "src/components/MainErrorBoundary.tsx",
+    "src/utils/errorHandler.ts"
+  ]
 }

@@ -1,4 +1,3 @@
-import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { UserDetails } from "../components/UserDetails";
 import { Button } from "../components/Button";

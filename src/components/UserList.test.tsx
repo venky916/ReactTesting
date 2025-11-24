@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { UserList } from "./UserList";
@@ -157,8 +157,6 @@ describe("UserList Component", () => {
 // 7. mockImplementation() - Custom mock behavior
 //    - Create promises that never resolve (for loading tests)
 //    - Full control over mock behavior
-
-
 
 // 🎓 NEW CONCEPTS YOU LEARNED:
 //

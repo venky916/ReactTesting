@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useTheme } from "../contexts/ThemeContext";
 import { useCounterStore } from "../store/counterStore";
-import { ThemeSwitcher } from "./ThemeSwitcher";
 
 export function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
