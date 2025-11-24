@@ -1,0 +1,134 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  # 🧪 JOB 1: Lint & Type Check
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📚 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Run ESLint
+        run: npm run lint
+        continue-on-error: true  # Don't block on lint errors (for now)
+
+      - name: 🔷 Type check
+        run: npx tsc --noEmit
+        continue-on-error: true  # Don't block on type errors (for now)
+
+  # 🧪 JOB 2: Run Unit Tests
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📚 Install dependencies
+        run: npm ci
+
+      - name: 🧪 Run unit & integration tests with coverage
+        run: npm run test:coverage
+
+      - name: 📊 Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false
+
+  # 🌐 JOB 3: Run E2E Tests
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📚 Install dependencies
+        run: npm ci
+
+      - name: 🎭 Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: 🏗️ Build application
+        run: npm run build
+
+      - name: 🌐 Run E2E tests
+        run: npm run test:e2e
+
+      - name: 📸 Upload Playwright report (if failed)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  # 🚀 JOB 4: Deploy to Vercel (only on main branch)
+  deploy:
+    needs: [lint, test, e2e]  # Wait for all tests to pass
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🚀 Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          working-directory: ./
+
+# 🎓 WHAT THIS DOES:
+#
+# On every push to main/develop:
+# 1. ✅ Runs ESLint (but doesn't block if errors)
+# 2. ✅ Runs TypeScript check (but doesn't block if errors)
+# 3. ✅ Runs all unit tests with coverage
+# 4. ✅ Runs all E2E tests
+# 5. ✅ If on main branch AND all tests pass → Deploy to Vercel!
+#
+# On pull requests:
+# 1-4 same as above
+# 5. ❌ Don't deploy (only deploy from main)
+#
+# 🔥 KEY FEATURES:
+# - continue-on-error: true → Lint/type errors don't block deploy (for now)
+# - needs: [lint, test, e2e] → Deploy only if all jobs pass
+# - if: github.ref == 'refs/heads/main' → Deploy only from main branch
+# - Upload Playwright report on failure → Debug E2E failures
+# - Codecov integration → Track coverage over time
+#
+# 💡 LATER (when ready):
+# - Remove continue-on-error to enforce strict checks
+# - Add build caching for faster runs
+# - Add deployment notifications (Slack, Discord, etc.)

@@ -1,5 +1,5 @@
-import { Component,type  ReactNode, type ErrorInfo } from "react";
-import { toast } from "react-toastify"; // or your toast library
+import { Component, type ReactNode, type ErrorInfo } from "react";
+// import { toast } from "react-toastify"; // or your toast library
 
 interface Props {
   children: ReactNode;
@@ -40,7 +40,7 @@ export class MainErrorBoundary extends Component<Props, State> {
 
     // 4. Show toast notification (optional)
     if (this.props.level === "component") {
-      toast.error("Something went wrong in this section");
+      // toast.error("Something went wrong in this section");
     }
   }
 
@@ -64,7 +64,7 @@ export class MainErrorBoundary extends Component<Props, State> {
 
   renderFallback() {
     const { level } = this.props;
-    const { error } = this.state;
+    // const { error } = this.state;
 
     // App level - Full screen error
     if (level === "app") {

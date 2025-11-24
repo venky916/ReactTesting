@@ -34,6 +34,7 @@ export function AddUserForm({ onUserAdded }: AddUserFormProps) {
       // Notify parent
       onUserAdded();
     } catch (err) {
+      console.log(err);
       setError("Failed to add user");
     } finally {
       setLoading(false);

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { UserDetails } from "./UserDetails";
@@ -13,7 +14,7 @@ describe("UserDetails Component", () => {
   // TEST 1: Does it show loading initially?
   it("should show loading state initially", () => {
     vi.mocked(userApi.fetchUserById).mockImplementation(
-      () => new Promise(() => {})
+      () => new Promise(() => {}),
     );
 
     render(<UserDetails userId={1} />);
@@ -44,14 +45,14 @@ describe("UserDetails Component", () => {
   // TEST 3: Does it show error when fetch fails?
   it("should show error when fetch fails", async () => {
     vi.mocked(userApi.fetchUserById).mockRejectedValue(
-      new Error("User with id 999 not found")
+      new Error("User with id 999 not found"),
     );
 
     render(<UserDetails userId={999} />);
 
     await waitFor(() => {
       expect(
-        screen.getByText(/user with id 999 not found/i)
+        screen.getByText(/user with id 999 not found/i),
       ).toBeInTheDocument();
     });
   });
@@ -138,7 +139,7 @@ describe("UserDetails Component", () => {
     expect(screen.getByText(/loading user details/i)).toBeInTheDocument();
     await waitFor(() => {
       expect(
-        screen.queryByText(/loading user details/i)
+        screen.queryByText(/loading user details/i),
       ).not.toBeInTheDocument();
     });
 
@@ -173,6 +174,6 @@ describe("UserDetails Component", () => {
 // ⚠️ IMPORTANT LESSON:
 // ❌ DON'T USE: getByRole('status') or getByRole('alert') with text matching
 // ✅ ALWAYS USE: getByText() for text content
-// 
-// Why? Because role="status" and role="alert" don't automatically 
+//
+// Why? Because role="status" and role="alert" don't automatically
 // have accessible names from their text content!
